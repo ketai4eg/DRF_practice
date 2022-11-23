@@ -1,4 +1,4 @@
-from rest_framework import viewsets, renderers, permissions
+from rest_framework import viewsets, renderers, permissions, filters
 from django.shortcuts import render
 from django.contrib.auth.models import User
 from rest_framework.decorators import api_view, action
@@ -8,6 +8,28 @@ import json
 from .models import Categories, Balance, Transactions
 from .serializers import UserSerializer, CategorySerializer, TransactionsSerializer
 from .permissions import IsOwner
+from django_filters.rest_framework import DjangoFilterBackend
+from django_cron import CronJobBase, Schedule
+from django.core.mail import send_mail
+
+# emails treatment and body
+# def email():
+#     queryset = User.objects.all()
+#     for user in queryset:
+#         if user.email:
+#             subject = 'Your statistics'
+#             message = f' Dear {user.username}, up to now you have available {Balance.objects.get(username=user.id).balance} money \n Have a nice day! '
+#             email_from = settings.EMAIL_HOST_USER
+#             recipient_list = [user.email, ]
+#             send_mail(subject, message, email_from, recipient_list)
+#     return "done"
+
+
+# scheduler for e-mails sending
+# class MyCronJob(CronJobBase):
+#     schedule = Schedule(run_at_times=["09:00", ], retry_after_failure_mins=1)
+#     code = 'views.MyCronJob'
+    # email()
 
 
 @api_view(['GET',])
@@ -82,6 +104,9 @@ class TransactionsViewSet(viewsets.ModelViewSet):
     queryset = Transactions.objects.all()
     serializer_class = TransactionsSerializer
     permission_classes = [IsOwner]
+    filter_backends = [filters.OrderingFilter, DjangoFilterBackend]
+    filterset_fields = ['amount', 'time', 'category', ]
+    ordering_fields = ['amount', 'time', 'category',]
 
     def get_queryset(self):
         queryset = Transactions.objects.filter(username=self.request.user)
