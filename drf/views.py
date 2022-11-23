@@ -1,4 +1,4 @@
-from rest_framework import viewsets, renderers, permissions, filters
+from rest_framework import viewsets, renderers, filters
 from django.shortcuts import render
 from django.contrib.auth.models import User
 from rest_framework.decorators import api_view, action
@@ -11,6 +11,7 @@ from .permissions import IsOwner
 from django_filters.rest_framework import DjangoFilterBackend
 from django_cron import CronJobBase, Schedule
 from django.core.mail import send_mail
+
 
 # emails treatment and body
 # def email():
@@ -29,10 +30,10 @@ from django.core.mail import send_mail
 # class MyCronJob(CronJobBase):
 #     schedule = Schedule(run_at_times=["09:00", ], retry_after_failure_mins=1)
 #     code = 'views.MyCronJob'
-    # email()
+# email()
 
-
-@api_view(['GET',])
+# main page with links to other
+@api_view(['GET', ])
 def api_root(request, format=None):
     return Response({
         'new user': reverse('user-create', request=request, format=format),
@@ -44,6 +45,7 @@ def api_root(request, format=None):
     })
 
 
+# User creation. List of standard categories will be added automatically. Balance is 0 for new user set automatically.
 class UserCreateViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
@@ -64,12 +66,13 @@ class UserCreateViewSet(viewsets.ModelViewSet):
         return Response(request.data)
 
 
+# Getting information about current user. Also balance can be top up here.
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     permission_classes = [IsOwner]
 
-    def get_queryset(self):  # this method is called inside of get
+    def get_queryset(self):
         queryset = User.objects.filter(username=self.request.user)
         return queryset
 
@@ -84,6 +87,7 @@ class UserViewSet(viewsets.ModelViewSet):
         return Response(request.data)
 
 
+# Full information about categories which user has. Can be updated, created new one, or deleted.
 class CategoriesViewSet(viewsets.ModelViewSet):
     queryset = Categories.objects.all()
     serializer_class = CategorySerializer
@@ -100,13 +104,15 @@ class CategoriesViewSet(viewsets.ModelViewSet):
         serializer.save(username_id=self.request.user.pk)
 
 
+# Full information on Transactions which user has. Can be updated, created new one, or deleted. The balance will be
+# changed in case of updating of the amount in any Transactions and in case of deleting.
 class TransactionsViewSet(viewsets.ModelViewSet):
     queryset = Transactions.objects.all()
     serializer_class = TransactionsSerializer
     permission_classes = [IsOwner]
     filter_backends = [filters.OrderingFilter, DjangoFilterBackend]
     filterset_fields = ['amount', 'time', 'category', ]
-    ordering_fields = ['amount', 'time', 'category',]
+    ordering_fields = ['amount', 'time', 'category', ]
 
     def get_queryset(self):
         queryset = Transactions.objects.filter(username=self.request.user)
@@ -135,5 +141,6 @@ class TransactionsViewSet(viewsets.ModelViewSet):
         instance.delete()
 
 
+# simple function providing access to HTML form where token can be obtained.
 def token_creation(request):
-    return render(request, 'get_token.html',)
+    return render(request, 'get_token.html', )

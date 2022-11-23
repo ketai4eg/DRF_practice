@@ -1,0 +1,22 @@
+1. Напишите запрос, который подсчитает какое количество ноутбуков представлено в каждом бренде. Отсортируйте данные по убыванию.
+
+
+select nb.title, COUNT(*) as Amount
+from notebooks_notebook nn
+left join notebooks_brand nb on nn.brand_id = nb.id
+group by nb.title
+order by Amount DESC
+
+2. Вам необходимо выделить группы ноутбуков по размерам. Для этого размеры предварительно нужно округлить в большую сторону до ближайшего 0 или 5 и затем сгруппировать по одинаковым размерам, подсчитав количество ноутбуков в каждой группе. Отсортируйте данные по размерам.
+
+
+select nn.diagonal,
+case
+	when nn.diagonal - floor(CAST(nn.diagonal AS numeric)) = 0 then floor(CAST(nn.diagonal AS numeric))
+	when 0<nn.diagonal - floor(CAST(nn.diagonal AS numeric)) or nn.diagonal - floor(CAST(nn.diagonal AS numeric))<=0.5 then floor(CAST(nn.diagonal AS numeric))+0.5
+	when 0.5<nn.diagonal - floor(CAST(nn.diagonal AS numeric)) or nn.diagonal - floor(CAST(nn.diagonal AS numeric))<1 then floor(CAST(nn.diagonal AS numeric))+1
+	else null
+end as diagonal_final, COUNT(*) as Amount
+from notebooks_notebook nn
+group by diagonal_final, nn.diagonal
+order by Amount DESC

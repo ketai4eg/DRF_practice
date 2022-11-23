@@ -1,0 +1,75 @@
+This project was done by MStarykevich in frame of test project for intern position.
+
+Before run application requirements should be installed (pip install -r requirements.txt)
+all migrations should be applied if needed (py manage.py migrate)
+server can be started localy (127.0.0.1:8000) (py manage.py runserver)
+in settings.py some specific data about your e-mail should be added (EMAIL_HOST_USER = '****@gmail.com'
+EMAIL_HOST_PASSWORD = '****')
+cron service also should be started (py manage.py runcrons)
+
+main functions:
+1. by the main link (127.0.0.1:8000) you will get set of links to main parts of the projects:
+    new user creation: http://127.0.0.1:8000/user_create/
+    user info: http://127.0.0.1:8000/user_info/
+    list of categories: http://127.0.0.1:8000/categories/"
+    list of transactions: http://127.0.0.1:8000/transactions/
+    Token generation form is here: http://127.0.0.1:8000/token_creation/
+2. You will receive automatically e-mails about your current balance each morning at 9 am.
+3. By standard API view or with token you can simply communicate with server by API requests. (for example by REST client in visual code studio).
+4. Categories and transactions can be created, removed, updated and deleted (CRUD). All changes in transactions will result in user balance changes.
+5. Sorting and filtering by amount, time and category are also added.
+
+
+
+Some example of requests:
+
+User creation by REST client:
+POST http://127.0.0.1:8000/user_create/
+Content-Type: application/json
+
+{
+    "username":"Vasia",
+    "email":"vasia@vasia.vs",
+    "password":"Vasia"
+}
+
+You can get information about your account including current balance:
+
+GET http://127.0.0.1:8000/user_info/
+Content-Type: application/json
+Authorization: Token 75b32e5a7a483299c1b039cd30f4553adef30b0b *YOUR_TOKEN*
+
+You can add money to your account by simple patch request:
+
+PUT http://127.0.0.1:8000/user_info/
+Content-Type: application/json
+Authorization: Token 75b32e5a7a483299c1b039cd30f4553adef30b0b
+
+{
+    "balance": 50
+}
+
+Get list of standard categories:
+GET http://127.0.0.1:8000/categories/
+Content-Type: application/json
+Authorization: Token 75b32e5a7a483299c1b039cd30f4553adef30b0b
+
+CRUD for categories is also available.
+
+
+The same for transactions:
+POST http://localhost:8000/transactions/
+Content-Type: application/json
+Authorization: Token 75b32e5a7a483299c1b039cd30f4553adef30b0b
+
+{
+"amount":12,
+"category":"alcohol",
+"organisation":"shop Berezka"
+}
+
+And also you can get all your transactions . CRUD is also available for ech transaction.
+GET http://127.0.0.1:8000/trans/
+Content-Type: application/json
+Authorization: Token *YOUR_TOKEN*
+

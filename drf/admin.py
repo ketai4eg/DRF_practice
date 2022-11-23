@@ -17,4 +17,4 @@ class ServiceAdmin(admin.ModelAdmin):
 class ServiceAdmin(admin.ModelAdmin):
     list_display = 'username', 'category_list',
     list_filter = []
-# Register your models here.
+
