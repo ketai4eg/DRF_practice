@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+Dear User <br>
+Please continue to login in order to get your TOKEN
+        <form action = "../token/" method = "post" name="form">
+                      {% csrf_token %}
+                      <!-- Name is here -->
+                      <div>
+                        <label for="username" wfd-invisible="true">Name: </label>
+                        <input id="username" type="text" name="username" placeholder="Enter your Name" required="">
+                      </div>
+                        <div>
+                        <label for="password" wfd-invisible="true">Password </label>
+                        <input id="password" type="text" name="password" placeholder="Enter your password" required="">
+                      </div>
+            <input type="submit" value="get token">
+        </form>
+</body>
+</html>
