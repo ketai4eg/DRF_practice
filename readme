@@ -3,8 +3,7 @@ This project was done by MStarykevich in frame of test project for intern positi
 Before run application requirements should be installed (pip install -r requirements.txt)
 all migrations should be applied if needed (py manage.py migrate)
 server can be started localy (127.0.0.1:8000) (py manage.py runserver)
-in settings.py some specific data about your e-mail should be added (EMAIL_HOST_USER = '****@gmail.com'
-EMAIL_HOST_PASSWORD = '****')
+The config.py file should be created with EMAIL_HOST_USER = '****@gmail.com' EMAIL_HOST_PASSWORD = '****'. Or all of this data can be added from environment during project deploying.
 cron service also should be started (py manage.py runcrons).
 All api functions were covered by tests.
 

@@ -11,31 +11,34 @@ from .permissions import IsOwner
 from django_filters.rest_framework import DjangoFilterBackend
 from django_cron import CronJobBase, Schedule
 from django.core.mail import send_mail
-
+from DRF_test import settings
 
 # emails treatment and body
-# def email():
-#     queryset = User.objects.all()
-#     for user in queryset:
-#         if user.email:
-#             subject = 'Your statistics'
-#             message = f' Dear {user.username}, up to now you have available {Balance.objects.get(username=user.id).balance} money \n Have a nice day! '
-#             email_from = settings.EMAIL_HOST_USER
-#             recipient_list = [user.email, ]
-#             send_mail(subject, message, email_from, recipient_list)
-#     return "done"
+def email():
+    queryset = User.objects.all()
+    for user in queryset:
+        print(user.username)
+        print(user.email)
+        if user.email:
+            subject = 'Your statistics'
+            message = f' Dear {user.username}, up to now you have available {Balance.objects.get(username=user.id).balance} money \n Have a nice day! '
+            email_from = settings.EMAIL_HOST_USER
+            recipient_list = [user.email, ]
+            send_mail(subject, message, email_from, recipient_list)
+    return "done"
 
-
-# scheduler for e-mails sending
-# class MyCronJob(CronJobBase):
-#     schedule = Schedule(run_at_times=["09:00", ], retry_after_failure_mins=1)
-#     code = 'views.MyCronJob'
-# email()
+#
+# # scheduler for e-mails sending
+class MyCronJob(CronJobBase):
+    schedule = Schedule(run_at_times=["09:00", ], retry_after_failure_mins=1)
+    code = 'views.MyCronJob'
+email()
 
 # main page with links to other
 @api_view(['GET', ])
 def api_root(request, format=None):
     """Main page with links to other"""
+    email()
     return Response({
         'new user': reverse('user-create', request=request),
         'user info': reverse('user-info', request=request),
