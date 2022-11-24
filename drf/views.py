@@ -35,23 +35,25 @@ from django.core.mail import send_mail
 # main page with links to other
 @api_view(['GET', ])
 def api_root(request, format=None):
+    """Main page with links to other"""
     return Response({
-        'new user': reverse('user-create', request=request, format=format),
-        'user info': reverse('user-info', request=request, format=format),
-        "user's categories list": reverse('categories-list', request=request, format=format),
-        'transactions list': reverse('transactions-list', request=request, format=format),
-        'get your token here': reverse('token-creation', request=request, format=format),
+        'new user': reverse('user-create', request=request),
+        'user info': reverse('user-info', request=request),
+        "user's categories list": reverse('categories-list', request=request),
+        'transactions list': reverse('transactions-list', request=request),
+        'get your token here': reverse('token-creation', request=request),
 
     })
 
 
-# User creation. List of standard categories will be added automatically. Balance is 0 for new user set automatically.
 class UserCreateViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
     @action(detail=True, renderer_classes=[renderers.StaticHTMLRenderer])
     def create(self, request, *args, **kwargs):
+        """User creation. List of standard categories will be added automatically. Balance is 0 for new user set
+        automatically. """
         User.objects.create_user(username=request.data['username'],
                                  email=request.data['email'],
                                  password=request.data['password'])
@@ -68,6 +70,7 @@ class UserCreateViewSet(viewsets.ModelViewSet):
 
 # Getting information about current user. Also balance can be top up here.
 class UserViewSet(viewsets.ModelViewSet):
+    """Getting information about current user. Also balance can be top up here."""
     queryset = User.objects.all()
     serializer_class = UserSerializer
     permission_classes = [IsOwner]
@@ -89,6 +92,8 @@ class UserViewSet(viewsets.ModelViewSet):
 
 # Full information about categories which user has. Can be updated, created new one, or deleted.
 class CategoriesViewSet(viewsets.ModelViewSet):
+    """Get full list of categories or detailed info on specific one by id, add new category or update existed one by
+    id """
     queryset = Categories.objects.all()
     serializer_class = CategorySerializer
     permission_classes = [IsOwner]
@@ -107,6 +112,9 @@ class CategoriesViewSet(viewsets.ModelViewSet):
 # Full information on Transactions which user has. Can be updated, created new one, or deleted. The balance will be
 # changed in case of updating of the amount in any Transactions and in case of deleting.
 class TransactionsViewSet(viewsets.ModelViewSet):
+    """Full information on Transactions which user has. Can be updated, created new one, or deleted. The balance will
+    be changed in case of updating of the amount in any Transactions and in case of deleting. Sorting and filtering
+    are also available """
     queryset = Transactions.objects.all()
     serializer_class = TransactionsSerializer
     permission_classes = [IsOwner]

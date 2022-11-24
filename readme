@@ -5,7 +5,8 @@ all migrations should be applied if needed (py manage.py migrate)
 server can be started localy (127.0.0.1:8000) (py manage.py runserver)
 in settings.py some specific data about your e-mail should be added (EMAIL_HOST_USER = '****@gmail.com'
 EMAIL_HOST_PASSWORD = '****')
-cron service also should be started (py manage.py runcrons)
+cron service also should be started (py manage.py runcrons).
+All api functions were covered by tests.
 
 main functions:
 1. by the main link (127.0.0.1:8000) you will get set of links to main parts of the projects:

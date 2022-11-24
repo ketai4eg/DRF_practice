@@ -2,6 +2,7 @@ from django.urls import path
 from rest_framework.urlpatterns import format_suffix_patterns
 from drf.views import UserViewSet, api_root, UserCreateViewSet, CategoriesViewSet, TransactionsViewSet, token_creation
 from rest_framework.authtoken.views import obtain_auth_token
+from .yasg import urlpatterns as doc_urls
 
 user_info = UserViewSet.as_view({
     'get': 'list',
@@ -47,3 +48,5 @@ urlpatterns = format_suffix_patterns([
     path('token/', obtain_auth_token, name='api_token_auth'),
     path('token_creation/', token_creation, name='token-creation')
 ])
+
+urlpatterns += doc_urls
