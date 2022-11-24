@@ -17,8 +17,6 @@ from DRF_test import settings
 def email():
     queryset = User.objects.all()
     for user in queryset:
-        print(user.username)
-        print(user.email)
         if user.email:
             subject = 'Your statistics'
             message = f' Dear {user.username}, up to now you have available {Balance.objects.get(username=user.id).balance} money \n Have a nice day! '
@@ -38,7 +36,6 @@ email()
 @api_view(['GET', ])
 def api_root(request, format=None):
     """Main page with links to other"""
-    email()
     return Response({
         'new user': reverse('user-create', request=request),
         'user info': reverse('user-info', request=request),

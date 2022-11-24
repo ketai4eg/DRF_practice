@@ -3,17 +3,29 @@ This project was done by MStarykevich in frame of test project for intern positi
 Before run application requirements should be installed (pip install -r requirements.txt)
 all migrations should be applied if needed (py manage.py migrate)
 server can be started localy (127.0.0.1:8000) (py manage.py runserver)
-The config.py file should be created with EMAIL_HOST_USER = '****@gmail.com' EMAIL_HOST_PASSWORD = '****'. Or all of this data can be added from environment during project deploying.
+The .env file should be created with:
+
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_USE_TLS = True
+EMAIL_PORT = 587
+EMAIL_HOST_USER = '******@gmail.com'
+EMAIL_HOST_PASSWORD = '******'
+SECRET_KEY='*****'
+DJANGO_DEBUG = True
+
+Or all of this data can be added from environment during project deploying.
 cron service also should be started (py manage.py runcrons).
 All api functions were covered by tests.
 
 main functions:
 1. by the main link (127.0.0.1:8000) you will get set of links to main parts of the projects:
+
     new user creation: http://127.0.0.1:8000/user_create/
     user info: http://127.0.0.1:8000/user_info/
     list of categories: http://127.0.0.1:8000/categories/"
     list of transactions: http://127.0.0.1:8000/transactions/
     Token generation form is here: http://127.0.0.1:8000/token_creation/
+
 2. You will receive automatically e-mails about your current balance each morning at 9 am.
 3. By standard API view or with token you can simply communicate with server by API requests. (for example by REST client in visual code studio).
 4. Categories and transactions can be created, removed, updated and deleted (CRUD). All changes in transactions will result in user balance changes.
