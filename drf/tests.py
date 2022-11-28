@@ -1,5 +1,6 @@
 from django.test import TestCase
 from rest_framework import status
+from django.contrib import auth
 from rest_framework.reverse import reverse
 from django.contrib.auth.models import User
 from .models import Transactions, Categories, Balance
@@ -14,7 +15,7 @@ def user_creation(self, data=None):
         }
     self.client.post('/user_create/', data=data)
     del data['email']
-    token=self.client.post('/token/', data=data)
+    token = self.client.post('/token/', data=data)
     return token.data['token']
 
 
@@ -39,19 +40,16 @@ class UserApiTest(TestCase):
             'email': ['max@max.max'],
             'password': ['max'],
         })
-        headers={"HTTP_AUTHORIZATION": f"Token {token}"}
+        headers = {"HTTP_AUTHORIZATION": f"Token {token}"}
         response = self.client.get('/user_info/', content_type='application/json', **headers)
         self.assertTrue(response.data['results'][0]['username'] == 'Test1' and response.status_code == 200)
 
     def test_user_token_incorrect(self):
         token = user_creation(self)
-        headers={"HTTP_AUTHORIZATION": f"Token {token}0"}
+        headers = {"HTTP_AUTHORIZATION": f"Token {token}0"}
         response = self.client.get('/user_info/', content_type='application/json', **headers)
-        try:
-            isinstance(response.data['results'])
-            self.assertTrue(response.data['results'][0]['username'] != 'Test1' or response.status_code != 200)
-        except:
-            self.assertTrue(True)
+        print(response)
+        self.assertTrue(response.status_code == 403)
 
     def test_balance_top_up(self):
         token = user_creation(self, data={
@@ -59,8 +57,8 @@ class UserApiTest(TestCase):
             "email": ["mx@max.max"],
             "password": ["mx"],
         })
-        headers={"HTTP_AUTHORIZATION": f"Token {token}"}
-        data={
+        headers = {"HTTP_AUTHORIZATION": f"Token {token}"}
+        data = {
             "balance": 50,
         }
         response = self.client.put('/user_info/', content_type='application/json', data=data, **headers)
@@ -78,6 +76,7 @@ class UserApiTest(TestCase):
         }
         response = self.client.put('/user_info/', content_type='application/json', data=data, **headers)
         self.assertTrue(response.status_code == 403)
+
 
 class CategoriesApiTest(TestCase):
     def test_get_categories_list(self):
@@ -106,7 +105,7 @@ class CategoriesApiTest(TestCase):
             'email': ['max@max.max'],
             'password': ['max'],
         })
-        data={
+        data = {
             "category_list": "alcohol",
         }
         headers = {"HTTP_AUTHORIZATION": f"Token {token}"}
@@ -119,7 +118,7 @@ class CategoriesApiTest(TestCase):
             'email': ['max@max.max'],
             'password': ['max'],
         })
-        data={
+        data = {
             "category_list": "alcohol",
         }
         headers = {"HTTP_AUTHORIZATION": f"Token "}
@@ -132,7 +131,7 @@ class CategoriesApiTest(TestCase):
             'email': ['max@max.max'],
             'password': ['max'],
         })
-        data={
+        data = {
             "category_list": "alcohol",
         }
         headers = {"HTTP_AUTHORIZATION": f"Token {token}"}
@@ -153,16 +152,11 @@ class CategoriesApiTest(TestCase):
             "category_list": "alcohol",
         }
         headers = {"HTTP_AUTHORIZATION": f"Token "}
-        try:
-            cat_id = self.client.post('/categories/', content_type='application/json', data=data, **headers).data['id']
-            new_data = {
-                "category_list": "alcohol and girls",
-            }
-            response = self.client.put(f'/categories/{cat_id}/', content_type='application/json', data=new_data,
-                                   **headers)
-            self.assertTrue(response.status_code == 403)
-        except:
-            self.assertTrue(True)
+        response = self.client.post('/categories/', content_type='application/json', data=data, **headers)
+        new_data = {
+            "category_list": "alcohol and girls",
+        }
+        self.assertTrue(response.status_code == 403)
 
     def test_delete_category(self):
         token = user_creation(self, data={
@@ -170,7 +164,7 @@ class CategoriesApiTest(TestCase):
             'email': ['max@max.max'],
             'password': ['max'],
         })
-        data={
+        data = {
             "category_list": "alcohol",
         }
         headers = {"HTTP_AUTHORIZATION": f"Token {token}"}
@@ -184,16 +178,12 @@ class CategoriesApiTest(TestCase):
             'email': ['max@max.max'],
             'password': ['max'],
         })
-        data={
+        data = {
             "category_list": "alcohol",
         }
         headers = {"HTTP_AUTHORIZATION": f"Token "}
-        try:
-            cat_id = self.client.post('/categories/', content_type='application/json', data=data, **headers).data['id']
-            response = self.client.delete(f'/categories/{cat_id}/', content_type='application/json', **headers)
-            self.assertTrue(response.status_code != 204)
-        except:
-            self.assertTrue(True)
+        response = self.client.post('/categories/', content_type='application/json', data=data, **headers)
+        self.assertTrue(response.status_code == 403)
 
 
 class TransactionsApiTest(TestCase):
@@ -205,9 +195,9 @@ class TransactionsApiTest(TestCase):
         })
         headers = {"HTTP_AUTHORIZATION": f"Token {token}"}
         data = {
-                "amount": 20,
-                "category": "alcohol",
-                "organisation": "Berezka"
+            "amount": 20,
+            "category": "alcohol",
+            "organisation": "Berezka"
         }
         response = self.client.post('/transactions/', content_type='application/json', data=data, **headers)
         self.assertTrue(response.data["amount"] == 20 and response.status_code == 201)
@@ -220,9 +210,9 @@ class TransactionsApiTest(TestCase):
         })
         headers = {"HTTP_AUTHORIZATION": f"Token "}
         data = {
-                "amount": 20,
-                "category": "alcohol",
-                "organisation": "Berezka"
+            "amount": 20,
+            "category": "alcohol",
+            "organisation": "Berezka"
         }
         response = self.client.post('/transactions/', content_type='application/json', data=data, **headers)
         self.assertTrue(response.status_code == 403)
@@ -235,9 +225,9 @@ class TransactionsApiTest(TestCase):
         })
         headers = {"HTTP_AUTHORIZATION": f"Token {token}"}
         data = {
-                "amount": 20,
-                "category": "alcohol",
-                "organisation": "Berezka"
+            "amount": 20,
+            "category": "alcohol",
+            "organisation": "Berezka"
         }
         self.client.post('/transactions/', content_type='application/json', data=data, **headers)
         response = self.client.get('/transactions/', content_type='application/json', **headers)
@@ -251,9 +241,9 @@ class TransactionsApiTest(TestCase):
         })
         headers = {"HTTP_AUTHORIZATION": f"Token "}
         data = {
-                "amount": 20,
-                "category": "alcohol",
-                "organisation": "Berezka"
+            "amount": 20,
+            "category": "alcohol",
+            "organisation": "Berezka"
         }
         self.client.post('/transactions/', content_type='application/json', data=data, **headers)
         response = self.client.get('/transactions/', content_type='application/json', **headers)
@@ -267,17 +257,18 @@ class TransactionsApiTest(TestCase):
         })
         headers = {"HTTP_AUTHORIZATION": f"Token {token}"}
         data = {
-                "amount": 20,
-                "category": "alcohol",
-                "organisation": "Berezka"
+            "amount": 20,
+            "category": "alcohol",
+            "organisation": "Berezka"
         }
-        trans_id=self.client.post('/transactions/', content_type='application/json', data=data, **headers).data['id']
+        trans_id = self.client.post('/transactions/', content_type='application/json', data=data, **headers).data['id']
         new_data = {
-                "amount": 50,
-                "category": "alcohol",
-                "organisation": "Berezka"
+            "amount": 50,
+            "category": "alcohol",
+            "organisation": "Berezka"
         }
-        response = self.client.put(f'/transactions/{trans_id}/', content_type='application/json', data=new_data, **headers)
+        response = self.client.put(f'/transactions/{trans_id}/', content_type='application/json', data=new_data,
+                                   **headers)
         self.assertTrue(response.data["amount"] == 50 and response.status_code == 200)
 
     def test_update_transaction_without_token(self):
@@ -286,23 +277,19 @@ class TransactionsApiTest(TestCase):
             'email': ['max@max.max'],
             'password': ['max'],
         })
-        headers = {"HTTP_AUTHORIZATION": f"Token {token}"}
+        headers = {"HTTP_AUTHORIZATION": f"Token "}
         data = {
-                "amount": 20,
-                "category": "alcohol",
-                "organisation": "Berezka"
+            "amount": 20,
+            "category": "alcohol",
+            "organisation": "Berezka"
         }
-        trans_id=self.client.post('/transactions/', content_type='application/json', data=data, **headers).data['id']
+        response = self.client.post('/transactions/', content_type='application/json', data=data, **headers)
         new_data = {
-                "amount": 50,
-                "category": "alcohol",
-                "organisation": "Berezka"
+            "amount": 50,
+            "category": "alcohol",
+            "organisation": "Berezka"
         }
-        try:
-            response = self.client.put(f'/transactions/{trans_id}/', content_type='application/json', data=new_data)
-            self.assertTrue(response.status_code != 200)
-        except:
-            self.assertTrue(True)
+        self.assertTrue(response.status_code == 403)
 
     def test_delete_transaction(self):
         token = user_creation(self, data={
@@ -312,11 +299,11 @@ class TransactionsApiTest(TestCase):
         })
         headers = {"HTTP_AUTHORIZATION": f"Token {token}"}
         data = {
-                "amount": 20,
-                "category": "alcohol",
-                "organisation": "Berezka"
+            "amount": 20,
+            "category": "alcohol",
+            "organisation": "Berezka"
         }
-        trans_id=self.client.post('/transactions/', content_type='application/json', data=data, **headers).data['id']
+        trans_id = self.client.post('/transactions/', content_type='application/json', data=data, **headers).data['id']
         response = self.client.delete(f'/transactions/{trans_id}/', content_type='application/json', **headers)
         self.assertTrue(response.status_code == 204)
 
@@ -326,15 +313,11 @@ class TransactionsApiTest(TestCase):
             'email': ['max@max.max'],
             'password': ['max'],
         })
-        headers = {"HTTP_AUTHORIZATION": f"Token {token}"}
+        headers = {"HTTP_AUTHORIZATION": f"Token "}
         data = {
-                "amount": 20,
-                "category": "alcohol",
-                "organisation": "Berezka"
+            "amount": 20,
+            "category": "alcohol",
+            "organisation": "Berezka"
         }
-        trans_id=self.client.post('/transactions/', content_type='application/json', data=data, **headers).data['id']
-        try:
-            response = self.client.put(f'/transactions/{trans_id}/', content_type='application/json')
-            self.assertTrue(response.status_code != 204)
-        except:
-            self.assertTrue(True)
+        response = self.client.post('/transactions/', content_type='application/json', data=data, **headers)
+        self.assertTrue(response.status_code == 403)
