@@ -15,7 +15,6 @@ DJANGO_DEBUG = True
 
 Or all of this data can be added from environment during project deploying.
 cron service also should be started (py manage.py runcrons).
-crontab should be set up in the server in order to work (crontab -e)
 All api functions were covered by tests.
 
 main functions:
