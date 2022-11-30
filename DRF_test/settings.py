@@ -33,7 +33,9 @@ DEBUG = bool(os.environ.get('DJANGO_DEBUG', True))
 
 ALLOWED_HOSTS = []
 
-
+CRON_CLASSES = (
+    'drf.views.MyCronJob',
+)
 # Application definition
 
 INSTALLED_APPS = [
@@ -47,6 +49,7 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'django_filters',
     'drf_yasg',
+    'django-cron'
 
     'drf'
 ]
