@@ -33,9 +33,9 @@ DEBUG = bool(os.environ.get('DJANGO_DEBUG', True))
 
 ALLOWED_HOSTS = []
 
-CRON_CLASSES = (
+CRON_CLASSES = [
     'drf.views.MyCronJob',
-)
+]
 # Application definition
 
 INSTALLED_APPS = [
