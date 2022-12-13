@@ -49,7 +49,7 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'django_filters',
     'drf_yasg',
-    'django_cron'
+    'django_cron',
 
     'drf'
 ]
